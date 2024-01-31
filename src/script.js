@@ -1,14 +1,14 @@
 const gotoContainer = document.getElementById('goto')
 const responseContainer = document.getElementById('container')
 
-const port = 3000;
-const host = 'localhost';
+
+const request = 'http://localhost:3000'
 
 
 async function getResults(url) {
     responseContainer.innerHTML = '';
 
-    const response = await fetch(`http://${host}:${port}/content`, {
+    const response = await fetch(`${request}/content`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -35,7 +35,7 @@ async function getResults(url) {
 async function getChapters(url) {
     responseContainer.innerHTML = '';
 
-    const response = await fetch(`http://${host}:${port}/titles`, {
+    const response = await fetch(`${request}/titles`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -59,7 +59,7 @@ async function getChapters(url) {
 async function getImgs(url) {
     responseContainer.innerHTML = '';
 
-    const response = await fetch(`http://${host}:${port}/imgs`, {
+    const response = await fetch(`${request}/imgs`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
