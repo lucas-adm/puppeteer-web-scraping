@@ -14,6 +14,8 @@ app.listen(port, host, () => {
     console.log(`Servidor rodando em http://${host}:${port}}`);
 });
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 
 
 //Results
