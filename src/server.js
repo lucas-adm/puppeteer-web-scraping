@@ -1,12 +1,22 @@
 const express = require('express');
 const puppeteer = require('puppeteer');
 const cors = require('cors');
-
 const path = require('path');
+const childProcess = require('child_process');
+
 const app = express();
 // Configurações
 const port = process.env.PORT || 3000;
 const host = process.env.HOST || '0.0.0.0'
+
+try {
+    console.log('Instalando o Chrome...');
+    childProcess.execSync('npx puppeteer browsers install chrome');
+    console.log('Instalação do Chrome concluída.');
+} catch (error) {
+    console.error('Erro ao instalar o Chrome:', error.message);
+    process.exit(1);
+}
 
 app.use(express.json());
 app.use(cors());
