@@ -1,20 +1,20 @@
 const express = require('express');
+
 const puppeteer = require('puppeteer');
+
 const cors = require('cors');
+
 const path = require('path');
 
+//Server Config
 const app = express();
-// Configurações
-const port = process.env.PORT || 3000;
-const host = process.env.HOST || '0.0.0.0'
-
-
-
 app.use(express.json());
 app.use(cors());
 
-app.listen(port, host, () => {
-    console.log(`Servidor rodando em http://${host}:${port}}`);
+const port = process.env.PORT || 3000;
+
+app.listen(port, () => {
+    console.log(`Servidor rodando em ${port}`);
 });
 
 app.use(express.static(path.join(__dirname, 'public')));
