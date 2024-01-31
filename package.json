@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npm install",
+    "build": "npm install && npx puppeteer browsers install chrome",
     "start": "node src/server.js"
   },
   "dependencies": {

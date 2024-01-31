@@ -4,6 +4,7 @@ const responseContainer = document.getElementById('container')
 const port = 3000;
 const host = 'localhost';
 
+
 async function getResults(url) {
     responseContainer.innerHTML = '';
 
