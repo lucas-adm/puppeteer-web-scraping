@@ -16,11 +16,13 @@ app.use(cors());
 
 const port = process.env.PORT || 3000;
 
+//Porta
 app.listen(port, () => {
     console.log(`Servidor rodando em ${port}`);
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
+//Site
+app.use(express.static('public'));
 
 
 

@@ -2,7 +2,7 @@ const gotoContainer = document.getElementById('goto')
 const responseContainer = document.getElementById('container')
 
 
-const request = 'http://localhost:3000'
+const request = 'https://puppeteer-node-service.onrender.com'
 
 
 async function getResults(url) {
