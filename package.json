@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "npm install && npx puppeteer browsers install chrome --path=/opt/render/project/.render/chrome",
+    "build": "npm install && PUPPETEER_CACHE_DIR=/opt/render/project/.render/chrome npx puppeteer browsers install chrome",
     "start": "node src/server.js"
   },
   "dependencies": {
