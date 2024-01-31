@@ -6,6 +6,9 @@ const cors = require('cors');
 
 const path = require('path');
 
+const dotenv = require('dotenv')
+dotenv.config();
+
 //Server Config
 const app = express();
 app.use(express.json());
@@ -24,8 +27,17 @@ app.use(express.static(path.join(__dirname, 'public')));
 //Results
 async function getTitles(url) {
     const browser = await puppeteer.launch({
+        args: [
+            "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            "--single-process", // Ser executado em um único processo
+            "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+        ],
         headless: 'new', // Usar o novo modo Headless
+        executablePath: process.env_NODE.ENV === 'production'
+            ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     });
+
     const page = await browser.newPage();
 
     // Navegar até a página desejada
@@ -72,8 +84,17 @@ app.post('/titles', async (req, res) => {
 //Content
 async function getContent(url) {
     const browser = await puppeteer.launch({
+        args: [
+            "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            "--single-process", // Ser executado em um único processo
+            "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+        ],
         headless: 'new', // Usar o novo modo Headless
+        executablePath: process.env_NODE.ENV === 'production'
+            ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     });
+
     const page = await browser.newPage();
 
     // Navegar até a página desejada
@@ -140,10 +161,18 @@ app.post('/content', async (req, res) => {
 
 //Imgs
 async function imgsUrls(url) {
-
     const browser = await puppeteer.launch({
+        args: [
+            "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            "--single-process", // Ser executado em um único processo
+            "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+        ],
         headless: 'new', // Usar o novo modo Headless
+        executablePath: process.env_NODE.ENV === 'production'
+            ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     });
+
     const page = await browser.newPage();
 
     // Navegar até a página desejada
