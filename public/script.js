@@ -1,14 +1,25 @@
 const gotoContainer = document.getElementById('goto')
 const responseContainer = document.getElementById('container')
+const load = document.getElementById('loading')
 
+const parentsBtns = document.querySelectorAll('#parent');
+parentsBtns.forEach((parent) => {
+    parent.addEventListener('click', () => {
+        parentsBtns.forEach((bg) => {
+            bg.classList.remove('active')
+        })
+        parent.classList.add('active')
+    })
+})
 
 const request = 'https://puppeteer-node-service.onrender.com'
 
-
 async function getResults(url) {
-    responseContainer.innerHTML = '';
 
-    const response = await fetch(`${request}/content`, {
+    responseContainer.innerHTML = '';
+    load.style.display = 'block';
+
+    const response = await fetch(`${request}/results`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -16,48 +27,63 @@ async function getResults(url) {
         body: JSON.stringify({ url })
     })
 
-    const contents = await response.json();
-    for (const key in contents) {
-        if (contents.hasOwnProperty(key)) {
-            const content = contents[key]
-            const chapter = `
-            <div class="result">
-                <span>${content.h2[0]}</span>
-                <button onclick="getChapters('https://angular-blog-2mq9.onrender.com')">${content.p[0]}</button>
-            </div>
-                            `
-
-            responseContainer.innerHTML += chapter
+    const cards = await response.json();
+    for (const key in cards) {
+        if (cards.hasOwnProperty(key)) {
+            const card = cards[key];
+            const newCard = `
+                    <div class="result">
+                        <button onclick="getChapters('${card.url}')">${card.value}</button>
+                        <span>${card.data}</span>
+                    </div>
+                `;
+            responseContainer.innerHTML += newCard;
         }
     }
+    load.style.display = 'none';
 }
 
 async function getChapters(url) {
-    responseContainer.innerHTML = '';
 
-    const response = await fetch(`${request}/titles`, {
+    responseContainer.innerHTML = '';
+    load.style.display = 'block';
+
+    goto.querySelector('label').textContent = '1 - Chapters'
+    input.setAttribute('parent', '1')
+    input.setAttribute('param', 'chapters')
+    input.value = url;
+
+    const response = await fetch(`${request}/chapters`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ url })
     })
-    const titles = await response.json();
-    for (const key in titles) {
-        if (titles.hasOwnProperty(key)) {
-            const title = titles[key]
-            const h1 = `
+    const chapters = await response.json();
+    for (const key in chapters) {
+        if (chapters.hasOwnProperty(key)) {
+            const chapter = chapters[key]
+            const newChapter = `
             <div class="chapter">
-                <button onclick="getImgs('https://angular-blog-2mq9.onrender.com')">${title}</button>
+                <button onclick="getImgs('${chapter.url}')">${chapter.text}</button>
             </div>
                         `
-            responseContainer.innerHTML += h1
+            responseContainer.innerHTML += newChapter
         }
     }
+    load.style.display = 'none';
 }
 
 async function getImgs(url) {
+
     responseContainer.innerHTML = '';
+    load.style.display = 'block';
+
+    goto.querySelector('label').textContent = '1 - Content'
+    input.setAttribute('parent', '1')
+    input.setAttribute('param', 'contents')
+    input.value = url;
 
     const response = await fetch(`${request}/imgs`, {
         method: 'POST',
@@ -66,7 +92,6 @@ async function getImgs(url) {
         },
         body: JSON.stringify({ url })
     })
-    // const urls = await response.text();
     const urls = await response.json();
     for (const key in urls) {
         if (urls.hasOwnProperty(key)) {
@@ -79,6 +104,7 @@ async function getImgs(url) {
             responseContainer.innerHTML += img
         }
     }
+    load.style.display = 'none';
 }
 
 //Crias os parâmetros
@@ -93,9 +119,11 @@ function createParams(parent) {
     gotoContainer.innerHTML = params
 }
 
-//Cria o path
+// Cria o path
 function createForm(parent, param) {
+
     lastForm = gotoContainer.querySelector('#path:last-child')
+
     if (lastForm) {
         lastForm.remove()
     }

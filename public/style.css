@@ -1,4 +1,5 @@
 * {
+    font-family: 'Ubuntu', sans-serif;
     margin: 0;
     padding: 0;
     border: 0;
@@ -10,6 +11,11 @@ body {
     width: 100vw;
     min-height: 100vh;
     overflow-x: hidden;
+}
+
+.active {
+    background-color: white;
+    color: #1c1c1c;
 }
 
 nav {
@@ -40,7 +46,7 @@ button {
     background: #1c1c1c;
     color: white;
     font-size: .9rem;
-    font-weight: bolder;
+    font-weight: bold;
     border: 1px solid white;
     border-radius: .25rem;
     padding: .333rem;
@@ -49,7 +55,7 @@ button {
 
 button:hover {
     background-color: white;
-    color: black;
+    color: #1c1c1c;
 }
 
 form {
@@ -60,12 +66,17 @@ form {
 }
 
 form>label {
-    color: white;
+    border-radius: .25rem;
+    padding: .25rem;
+    background: white;
+    color: #1c1c1c;
     font-size: .9rem;
+    font-weight: bold;
+    text-transform: capitalize;
 }
 
 form>input {
-    width: 300px;
+    width: 350px;
     font-size: .9rem;
     font-weight: bold;
     border: none;
@@ -80,7 +91,31 @@ main {
 
 main>* {
     width: 100vw;
-    margin-left: -6px;
+    margin-left: -7.25px;
+}
+
+main #loading {
+    display: none;
+    width: 75px;
+    height: 75px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    mix-blend-mode: darken;
+    animation: slideIn .5s ease-in-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
 }
 
 main .container {
@@ -105,14 +140,14 @@ main .result span {
     color: white;
     font-size: 1rem;
     font-weight: bolder;
-    text-align: center;
+    text-align: left;
     text-transform: capitalize;
     border-radius: .25rem;
     padding: .5rem;
 }
 
 main .result button {
-    text-align: left;
+    text-align: center;
     text-transform: capitalize;
 }
 

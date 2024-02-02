@@ -4,6 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@500&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
     <title>Scraping</title>
 </head>
@@ -16,11 +21,13 @@
                 <button id="parent" onclick="createParams(2)">2</button>
                 <button id="parent" onclick="createParams(3)">3</button>
             </div>
-            <div id="goto" class="goto">
-            </div>
+            <div id="goto" class="goto"></div>
         </nav>
     </header>
     <main>
+        <div>
+            <img id="loading" src="img/loading.svg" alt="loading">
+        </div>
         <div id="container" class="container"></div>
     </main>
 </body>
