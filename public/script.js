@@ -1,6 +1,8 @@
 const gotoContainer = document.getElementById('goto')
 const responseContainer = document.getElementById('container')
-const load = document.getElementById('loading')
+
+const waiting = document.getElementById('loading')
+const error = document.getElementById('status-500')
 
 const parentsBtns = document.querySelectorAll('#parent');
 parentsBtns.forEach((parent) => {
@@ -12,99 +14,140 @@ parentsBtns.forEach((parent) => {
     })
 })
 
-const request = 'https://puppeteer-node-service.onrender.com'
+// const request = 'https://puppeteer-node-service.onrender.com'
+const request = 'http://localhost:3000'
 
 async function getResults(url) {
 
     responseContainer.innerHTML = '';
-    load.style.display = 'block';
+    waiting.classList.remove('off');
+    error.classList.add('off');
 
-    const response = await fetch(`${request}/results`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-    })
+    try {
+        const response = await fetch(`${request}/results`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url })
+        })
 
-    const cards = await response.json();
-    for (const key in cards) {
-        if (cards.hasOwnProperty(key)) {
-            const card = cards[key];
-            const newCard = `
-                    <div class="result">
-                        <button onclick="getChapters('${card.url}')">${card.value}</button>
-                        <span>${card.data}</span>
-                    </div>
-                `;
-            responseContainer.innerHTML += newCard;
+        if (response.ok) {
+            const cards = await response.json();
+            for (const key in cards) {
+                if (cards.hasOwnProperty(key)) {
+                    const card = cards[key];
+                    const newCard = `
+                            <div class="result">
+                                <button onclick="getChapters('${card.url}')">${card.value}</button>
+                                <span>${card.data}</span>
+                            </div>
+                        `;
+                    responseContainer.innerHTML += newCard;
+                }
+            }
+        } else {
+            console.log('Internal Server Error');
+            error.classList.remove('off')
         }
+    } catch (exception) {
+        console.error('Error:', exception);
+        error.classList.remove('off')
+    } finally {
+        waiting.classList.add('off')
     }
-    load.style.display = 'none';
 }
 
 async function getChapters(url) {
 
     responseContainer.innerHTML = '';
-    load.style.display = 'block';
+    error.classList.add('off');
+    waiting.classList.remove('off');
 
     goto.querySelector('label').textContent = '1 - Chapters'
     input.setAttribute('parent', '1')
     input.setAttribute('param', 'chapters')
     input.value = url;
 
-    const response = await fetch(`${request}/chapters`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-    })
-    const chapters = await response.json();
-    for (const key in chapters) {
-        if (chapters.hasOwnProperty(key)) {
-            const chapter = chapters[key]
-            const newChapter = `
-            <div class="chapter">
-                <button onclick="getImgs('${chapter.url}')">${chapter.text}</button>
-            </div>
-                        `
-            responseContainer.innerHTML += newChapter
+    try {
+        const response = await fetch(`${request}/chapters`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url })
+        })
+
+        if (response.ok) {
+            const chapters = await response.json();
+            for (const key in chapters) {
+                if (chapters.hasOwnProperty(key)) {
+                    const chapter = chapters[key]
+                    const newChapter = `
+                    <div class="chapter">
+                        <button onclick="getImgs('${chapter.url}')">${chapter.text}</button>
+                    </div>
+                                `
+                    responseContainer.innerHTML += newChapter
+                }
+            }
+            error.classList.add('off');
+        } else {
+            console.log('Internal Server Error');
+            error.classList.remove('off')
         }
+    } catch (exception) {
+        console.error('Error:', exception);
+        error.classList.remove('off')
+    } finally {
+        waiting.classList.add('off')
     }
-    load.style.display = 'none';
 }
 
 async function getImgs(url) {
 
     responseContainer.innerHTML = '';
-    load.style.display = 'block';
+    error.classList.add('off');
+    waiting.classList.remove('off');
 
     goto.querySelector('label').textContent = '1 - Content'
     input.setAttribute('parent', '1')
     input.setAttribute('param', 'contents')
     input.value = url;
 
-    const response = await fetch(`${request}/imgs`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-    })
-    const urls = await response.json();
-    for (const key in urls) {
-        if (urls.hasOwnProperty(key)) {
-            const url = urls[key]
-            const img = `
+    try {
+        const response = await fetch(`${request}/imgs`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ url })
+        })
+
+        if (response.ok) {
+            const urls = await response.json();
+            for (const key in urls) {
+                if (urls.hasOwnProperty(key)) {
+                    const url = urls[key]
+                    const img = `
                         <div class="content">
                             <img src="${url}" alt="">
                         </div>
                         `
-            responseContainer.innerHTML += img
+                    responseContainer.innerHTML += img
+                }
+            }
+            error.classList.add('off');
+        } else {
+            console.log('Internal Server Error');
+            error.classList.remove('off')
         }
+    } catch (exception) {
+        console.error('Error:', exception);
+        error.classList.remove('off')
+    } finally {
+        waiting.classList.add('off')
     }
-    load.style.display = 'none';
 }
 
 //Crias os parâmetros

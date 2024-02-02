@@ -42,7 +42,9 @@ async function getResults(url) {
 
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    page.setDefaultTimeout(20000);
+
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
 
     await page.waitForSelector('div .page-item-detail', { visible: true });
 
@@ -95,11 +97,12 @@ async function getChapters(url) {
 
     const page = await browser.newPage();
 
+    page.setDefaultTimeout(20000);
+
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
     await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-    // Aguarde a presença dos elementos antes de tentar capturá-los
     await page.waitForSelector('li.wp-manga-chapter', { visible: true });
 
     const chapters = await page.evaluate(() => {
@@ -145,15 +148,12 @@ async function imgsUrls(url) {
 
     const page = await browser.newPage();
 
-    // Definir o User-Agent desejado
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-    // Navegar até a página desejada
-    await page.goto(url, { waitUntil: 'networkidle2' });
+    page.setDefaultTimeout(20000);
 
-    await page.waitForSelector('img');
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
 
-    // Extrair URLs de imagens com id começando com 'image-' usando o atributo data-src
     const urls = await page.evaluate(() => {
         const imgTags = Array.from(document.querySelectorAll('img[id^="image-"]'));
         return imgTags.map(img => img.getAttribute('data-src'));
