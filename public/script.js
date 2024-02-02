@@ -14,8 +14,7 @@ parentsBtns.forEach((parent) => {
     })
 })
 
-// const request = 'https://puppeteer-node-service.onrender.com'
-const request = 'http://localhost:3000'
+const request = 'https://puppeteer-node-service.onrender.com'
 
 async function getResults(url) {
 
