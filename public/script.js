@@ -14,7 +14,8 @@ parentsBtns.forEach((parent) => {
     })
 })
 
-const request = 'https://puppeteer-node-service.onrender.com'
+// const request = 'https://puppeteer-node-service.onrender.com'
+const request = 'http://localhost:3000'
 
 async function getResults(url) {
 
@@ -104,6 +105,7 @@ async function getChapters(url) {
 }
 
 async function getImgs(url) {
+    const nextBtn = document.getElementById('next');
 
     responseContainer.innerHTML = '';
     error.classList.add('off');
@@ -137,19 +139,56 @@ async function getImgs(url) {
                 }
             }
             error.classList.add('off');
+            nextBtn.classList.remove('off')
         } else {
             console.log('Internal Server Error');
             error.classList.remove('off')
+            nextBtn.classList.add('off')
         }
     } catch (exception) {
         console.error('Error:', exception);
         error.classList.remove('off')
+        nextBtn.classList.add('off')
     } finally {
         waiting.classList.add('off')
     }
 }
 
-//Crias os parâmetros
+async function nextPage() {
+    url = input.value;
+
+    const firstMatch = url.match(/-(?!0)\d+\/$/);
+    const secondMatch = url.match(/-0\d+\/$/);
+
+    if (firstMatch) {
+
+        let pageNumber = firstMatch[0];
+        pageNumber = parseInt(pageNumber.replace('-', ''), 10);
+        const nextPageNumber = pageNumber + 1;
+
+        const newUrl = url.replace(/-(\d+)\/$/, `-${nextPageNumber}/`);
+        input.value = newUrl;
+
+    }
+
+    if (secondMatch) {
+
+        let pageNumber = secondMatch[0]
+        pageNumber = parseInt(pageNumber.replace('-', ''), 10);
+        const nextPageNumber = pageNumber + 1;
+
+        if (nextPageNumber < 10) {
+            const newUrl = url.replace(/-(\d{1,2})\/$/, `-0${nextPageNumber}/`);
+            input.value = newUrl;
+        } else {
+            const newUrl = url.replace(/-(\d{1,2})\/$/, `-${nextPageNumber}/`);
+            input.value = newUrl;
+        }
+    }
+
+}
+
+//Cria os parâmetros
 function createParams(parent) {
     const params = `
     <div class="params">
@@ -172,9 +211,13 @@ function createForm(parent, param) {
 
     const form = `
     <div id="path" class="path" action="javascript:void(0)">
-        <form action="">
+        <form>
             <label for="path">${parent} - ${param}</label>
-            <input parent="${parent}" param="${param}" type="text" name="path" id="input" value="">
+            <div>
+                <input parent="${parent}" param="${param}" type="text" name="path" id="input" value="">
+                <button id="next" class="off"><i
+                        class="fa-solid fa-right-from-bracket" onclick="nextPage()"></i></button>
+            </div>
         </form>
     </div>
     `

@@ -27,18 +27,21 @@ app.use(express.static('public'));
 //Results
 async function getResults(url) {
     const browser = await puppeteer.launch({
-        // args: [
-        //     "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
-        //     "--no-sandbox", // Ambientes restritos, como contêineres
-        //     "--single-process", // Ser executado em um único processo
-        //     "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
-        // ],
+        args: [
+            // "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            // "--single-process", // Ser executado em um único processo
+            "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+            '--incognito',
+        ],
         headless: 'new', // Usar o novo modo Headless
         executablePath: process.env_NODE_ENV === 'production'
             ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     });
 
     const page = await browser.newPage();
+
+    await page.setCacheEnabled(false);
 
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
@@ -48,10 +51,8 @@ async function getResults(url) {
 
     await page.waitForSelector('div .page-item-detail', { visible: true });
 
-    const cards = await page.evaluate(() => {
-        const cardElements = document.querySelectorAll('div .page-item-detail');
-
-        return Array.from(cardElements).map(card => {
+    const cards = await page.$$eval('div .page-item-detail', cardElements => {
+        return cardElements.map(card => {
             const urlElement = card.querySelector('h3 a');
             const valueElement = card.querySelector('h3 a');
             const dataElementArray = card.querySelectorAll('.post-on');
@@ -64,6 +65,10 @@ async function getResults(url) {
             return { url, value, data };
         });
     });
+
+    await page.deleteCookie();
+
+    await page.setCacheEnabled(false);
 
     await browser.close();
 
@@ -80,8 +85,8 @@ app.post('/results', async (req, res) => {
         const content = await getResults(url);
         res.json(content); //Retorna Object
     } catch (error) {
-        console.error('Erro ao raspar Content:', error);
-        res.status(500).send('Erro ao raspar o conteúdo.');
+        console.error('Erro ao raspar Resultados:', error);
+        res.status(500).send('Erro ao raspar o resultado.');
     }
 })
 
@@ -90,12 +95,21 @@ app.post('/results', async (req, res) => {
 //Chapters
 async function getChapters(url) {
     const browser = await puppeteer.launch({
+        args: [
+            // "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            // "--single-process", // Ser executado em um único processo
+            // "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+            '--incognito',
+        ],
         headless: 'new',
         executablePath: process.env_NODE_ENV === 'production'
             ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
     });
 
     const page = await browser.newPage();
+
+    await page.setCacheEnabled(false);
 
     page.setDefaultTimeout(20000);
 
@@ -105,16 +119,18 @@ async function getChapters(url) {
 
     await page.waitForSelector('li.wp-manga-chapter', { visible: true });
 
-    const chapters = await page.evaluate(() => {
-        const chapterElements = document.querySelectorAll('li.wp-manga-chapter');
-
-        return Array.from(chapterElements).map(chapter => {
+    const chapters = await page.$$eval('li.wp-manga-chapter', chapterElements => {
+        return chapterElements.map(chapter => {
             const link = chapter.querySelector('a');
             const url = link.getAttribute('href');
             const text = link.textContent.trim();
             return { url, text };
         });
     });
+
+    await page.deleteCookie();
+
+    await page.setCacheEnabled(false);
 
     await browser.close();
 
@@ -141,6 +157,13 @@ app.post('/chapters', async (req, res) => {
 //Imgs
 async function imgsUrls(url) {
     const browser = await puppeteer.launch({
+        args: [
+            // "--disable-setuid-sandbox", // Desativa a verificação do ID do usuário
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            // "--single-process", // Ser executado em um único processo
+            // "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+            '--incognito',
+        ],
         headless: 'new',
         executablePath: process.env_NODE_ENV === 'production'
             ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
@@ -148,16 +171,18 @@ async function imgsUrls(url) {
 
     const page = await browser.newPage();
 
+    await page.setCacheEnabled(false);
+
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-    page.setDefaultTimeout(20000);
+    page.setDefaultTimeout(30000);
 
-    await page.goto(url, { waitUntil: 'domcontentloaded' });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    const urls = await page.evaluate(() => {
-        const imgTags = Array.from(document.querySelectorAll('img[id^="image-"]'));
-        return imgTags.map(img => img.getAttribute('data-src'));
-    });
+    const urls = await page.$$eval('img[id^="image-"]', imgTags =>
+        imgTags.map(img => img.getAttribute('data-src'))
+    );
+    await page.deleteCookie();
 
     await browser.close();
 

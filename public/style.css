@@ -75,8 +75,16 @@ form>label {
     text-transform: capitalize;
 }
 
-form>input {
-    width: 300px;
+form>div {
+    width: 350px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0 .5rem;
+}
+
+form>div>input {
+    width: 100%;
     font-size: .9rem;
     font-weight: bold;
     border: none;
@@ -162,7 +170,7 @@ main .chapter button {
 }
 
 main .container .content {
-    width: 95vw;
+    width: 100vw;
     margin: 0 auto;
 }
 
