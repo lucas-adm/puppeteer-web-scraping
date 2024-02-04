@@ -164,9 +164,7 @@ async function nextPage() {
         let pageNumber = firstMatch[0];
         pageNumber = parseInt(pageNumber.replace('-', ''), 10);
         const nextPageNumber = pageNumber + 1;
-
-        const newUrl = url.replace(/-(\d+)\/$/, `-${nextPageNumber}/`);
-        input.value = newUrl;
+        input.value = url.replace(/-(\d+)\/$/, `-${nextPageNumber}/`);
 
     }
 
@@ -177,14 +175,14 @@ async function nextPage() {
         const nextPageNumber = pageNumber + 1;
 
         if (nextPageNumber < 10) {
-            const newUrl = url.replace(/-(\d{1,2})\/$/, `-0${nextPageNumber}/`);
-            input.value = newUrl;
+            input.value = url.replace(/-(\d{1,2})\/$/, `-0${nextPageNumber}/`);
         } else {
-            const newUrl = url.replace(/-(\d{1,2})\/$/, `-${nextPageNumber}/`);
-            input.value = newUrl;
+            input.value = url.replace(/-(\d{1,2})\/$/, `-${nextPageNumber}/`);
         }
+
     }
 
+    return input.value
 }
 
 //Cria os parâmetros

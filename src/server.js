@@ -45,7 +45,7 @@ async function getResults(url) {
 
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-    page.setDefaultTimeout(20000);
+    // page.setDefaultTimeout(20000);
 
     await page.goto(url, { waitUntil: 'domcontentloaded' });
 
@@ -111,7 +111,7 @@ async function getChapters(url) {
 
     await page.setCacheEnabled(false);
 
-    page.setDefaultTimeout(20000);
+    // page.setDefaultTimeout(20000);
 
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
@@ -175,13 +175,14 @@ async function imgsUrls(url) {
 
     await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
 
-    page.setDefaultTimeout(30000);
+    // page.setDefaultTimeout(30000);
 
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
     const urls = await page.$$eval('img[id^="image-"]', imgTags =>
         imgTags.map(img => img.getAttribute('data-src'))
     );
+
     await page.deleteCookie();
 
     await browser.close();
