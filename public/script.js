@@ -104,7 +104,6 @@ async function getChapters(url) {
 }
 
 async function getImgs(url) {
-    const nextBtn = document.getElementById('next');
 
     responseContainer.innerHTML = '';
     error.classList.add('off');
@@ -113,7 +112,9 @@ async function getImgs(url) {
     goto.querySelector('label').textContent = '1 - Content'
     input.setAttribute('parent', '1')
     input.setAttribute('param', 'contents')
-    input.value = url;
+    input.value = url
+
+    navigator.clipboard.writeText(input.value)
 
     try {
         const response = await fetch(`${request}/imgs`, {
@@ -138,23 +139,20 @@ async function getImgs(url) {
                 }
             }
             error.classList.add('off');
-            nextBtn.classList.remove('off')
         } else {
             console.log('Internal Server Error');
             error.classList.remove('off')
-            nextBtn.classList.add('off')
         }
     } catch (exception) {
         console.error('Error:', exception);
         error.classList.remove('off')
-        nextBtn.classList.add('off')
     } finally {
         waiting.classList.add('off')
     }
 }
 
 async function nextPage() {
-    url = input.value;
+    const url = await navigator.clipboard.readText();
 
     const firstMatch = url.match(/-(?!0)\d+\/$/);
     const secondMatch = url.match(/-0\d+\/$/);
@@ -182,16 +180,16 @@ async function nextPage() {
 
     }
 
-    return input.value
+    getImgs(input.value);
 }
 
 //Cria os parâmetros
 function createParams(parent) {
     const params = `
     <div class="params">
-        <button parent="${parent}" onclick="createForm(${parent}, 'results')">Results</button>
-        <button parent="${parent}" onclick="createForm(${parent},'chapters')">Chapters</button>
         <button parent="${parent}" onclick="createForm(${parent}, 'contents')">Content</button>
+        <button parent="${parent}" onclick="createForm(${parent},'chapters')">Chapters</button>
+        <button parent="${parent}" onclick="createForm(${parent}, 'results')">Results</button>
     </div>
     `
     gotoContainer.innerHTML = params
@@ -211,9 +209,10 @@ function createForm(parent, param) {
         <form>
             <label for="path">${parent} - ${param}</label>
             <div>
+                <button id="next">
+                    <i class="fa-solid fa-right-from-bracket" onclick="nextPage()"></i>
+                </button>
                 <input parent="${parent}" param="${param}" type="text" name="path" id="input" value="">
-                <button id="next" class="off"><i
-                        class="fa-solid fa-right-from-bracket" onclick="nextPage()"></i></button>
             </div>
         </form>
     </div>
@@ -225,7 +224,6 @@ function createForm(parent, param) {
     const goto = gotoContainer.querySelector('#path');
 
     goto.addEventListener('submit', (event) => {
-
         event.preventDefault();
 
         const input = goto.querySelector('#input')
@@ -237,17 +235,14 @@ function createForm(parent, param) {
             if (!url) {
                 return;
             }
-
             //Condição 1
             if (parent === '1' && param === 'results') {
                 getResults(url)
             }
-
             //Condição 2
             if (parent === '1' && param === 'chapters') {
                 getChapters(url)
             }
-
             //Condição 3
             if (parent === '1' && param === 'contents') {
                 getImgs(url)
