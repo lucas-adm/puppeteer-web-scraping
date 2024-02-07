@@ -6,9 +6,8 @@
   <img width="75px" height="75px" src="https://simpleicons.org/icons/express.svg">
   <img width="55px" height="75px" src="https://user-images.githubusercontent.com/10379601/29446482-04f7036a-841f-11e7-9872-91d1fc2ea683.png">
   <img width="80px" height="75px" src="https://www.docker.com/wp-content/uploads/2024/02/cropped-docker-logo-favicon-180x180.png">
-  <img width="75px" height="75px" src="https://i.imgur.com/ONuAAaH.png">
 
-  ###### JavaScript, Node.js, Express.js, Puppeteer, Docker, Render
+  ###### JavaScript, Node.js, Express.js, Puppeteer, Docker
   
 </div>
 
