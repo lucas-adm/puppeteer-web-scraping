@@ -291,15 +291,15 @@ async function rqImgsUrls(url) {
 
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-    let urls = '';
+    let urls=  [];
 
     urls = await page.$$eval('figure a', imgTags =>
         imgTags.map(img => img.getAttribute('href'))
     );
 
-    if (!urls || urls.length === 0) {
-        urls = await page.$$eval('p a', imgTags =>
-            imgTags.map(img => img.getAttribute('href'))
+    if (urls.length === 0) {
+        urls = await page.$$eval('p img', imgTags =>
+            imgTags.map(img => img.getAttribute('src'))
         );
     }
 
