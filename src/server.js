@@ -204,3 +204,123 @@ app.post('/imgs', async (req, res) => {
         res.status(500).send('Erro ao raspar imagem.');
     }
 })
+
+
+
+//RQ
+//RQ Results
+async function rqGetResults(url) {
+    const browser = await puppeteer.launch({
+        args: [
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            "--no-zygote", // Responsável por pré-carregar bibliotecas e recursos compartilhados
+            '--incognito',
+        ],
+        headless: 'new', // Usar o novo modo Headless
+        executablePath: process.env_NODE_ENV === 'production'
+            ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+    });
+
+    const page = await browser.newPage();
+
+    await page.setCacheEnabled(false);
+
+    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
+
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
+
+    await page.waitForSelector('div .video-conteudo', { visible: true });
+
+    const cards = await page.$$eval('div .video-conteudo', cardElements => {
+        return cardElements.map(card => {
+            const urlElement = card.querySelector('a');
+            const valueElement = card.querySelector('a h2');
+            const statusElement = card.querySelector('div .thumb-conteudo a span')
+
+            const url = urlElement ? urlElement.getAttribute('href') : 'N/A';
+            const value = valueElement ? valueElement.textContent.trim() : 'N/A';
+            const status = statusElement ? statusElement.textContent.trim() : 'N/A';
+
+            return { url, value, status };
+        });
+    });
+
+    await page.deleteCookie();
+
+    await page.setCacheEnabled(false);
+
+    await browser.close();
+
+    return cards;
+}
+
+app.post('/rq-results', async (req, res) => {
+    const url = req.body.url;
+
+    if (!url) {
+        return res.status(400).send('URL não fornecida.');
+    }
+    try {
+        const content = await rqGetResults(url);
+        res.json(content); //Retorna Object
+    } catch (error) {
+        console.error('Erro ao raspar Resultados:', error);
+        res.status(500).send('Erro ao raspar o resultado.');
+    }
+})
+
+
+
+//RQ Imgs
+async function rqImgsUrls(url) {
+    const browser = await puppeteer.launch({
+        args: [
+            "--no-sandbox", // Ambientes restritos, como contêineres
+            '--incognito',
+        ],
+        headless: 'new',
+        executablePath: process.env_NODE_ENV === 'production'
+            ? process.env.PUPPETEER_EXECUTABLE_PATH : puppeteer.executablePath(),
+    });
+
+    const page = await browser.newPage();
+
+    await page.setCacheEnabled(false);
+
+    await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36");
+
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
+
+    let urls = '';
+
+    urls = await page.$$eval('figure a', imgTags =>
+        imgTags.map(img => img.getAttribute('href'))
+    );
+
+    if (!urls || urls.length === 0) {
+        urls = await page.$$eval('p a', imgTags =>
+            imgTags.map(img => img.getAttribute('href'))
+        );
+    }
+
+    await page.deleteCookie();
+
+    await browser.close();
+
+    return urls;
+}
+
+app.post('/rq-imgs', async (req, res) => {
+    const url = req.body.url;
+
+    if (!url) {
+        return res.status(400).send('URL não fornecida.');
+    }
+    try {
+        const urls = await rqImgsUrls(url);
+        res.json(urls);
+    } catch (error) {
+        console.error('Erro ao raspar as imagens:', error);
+        res.status(500).send('Erro ao raspar imagem.');
+    }
+})
